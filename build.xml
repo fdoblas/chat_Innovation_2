@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="Chat_Innovation_2">
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.5" />
+	<property name="source" value="1.5" />
+	<path id="Chat_Innovation_2.classpath">
+		<pathelement location="bin" />
+	</path>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target name="build">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<mkdir dir="bin"/>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="Chat_Innovation_2.classpath" />
+		</javac>
+	</target>
+	<target name="ServidorMultiHilos" depends="build">
+		<java classname="servidor.ServidorMultiHilos" failonerror="true" fork="no">
+			<classpath refid="Chat_Innovation_2.classpath" />
+		</java>
+	</target>
+	<target name="VentanaChat" depends="build">
+		<parallel>
+			<sequential>
+				<java classname="cliente.VentanaChat" failonerror="true" fork="true">
+					<classpath refid="Chat_Innovation_2.classpath" />
+				</java>
+			</sequential>
+			<sleep seconds="10" />
+			<sequential>
+				<java classname="cliente.VentanaChat" failonerror="true" fork="true">
+					<classpath refid="Chat_Innovation_2.classpath" />
+				</java>
+			</sequential>
+			<sleep seconds="10" />
+			<sequential>
+				<java classname="cliente.VentanaChat" failonerror="true" fork="true">
+					<classpath refid="Chat_Innovation_2.classpath" />
+				</java>
+			</sequential>
+		</parallel>
+	</target>
+	<target name="runChat">
+		<parallel>
+			<sequential>
+				<antcall target="ServidorMultiHilos" />
+			</sequential>
+			<sleep seconds="5" />
+			<sequential>
+				<antcall target="VentanaChat" />
+			</sequential>
+		</parallel>
+	</target>
+</project>
